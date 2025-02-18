@@ -71,5 +71,5 @@ def webhook():
         return jsonify({"message": "Internal error"}), 500
 
 if __name__ == "__main__":
-    # Run on port 5001 (for example). Ensure your Square Webhook is configured for this URL.
+    # Run on port 8081 (for example). Ensure your Square Webhook is configured for this URL.
     app.run(host="0.0.0.0", port=8081, debug=True)
