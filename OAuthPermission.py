@@ -16,7 +16,7 @@ if SQ_ENVIRONMENT == 'production':
 else:
     base_url = "https://connect.squareupsandbox.com"
 
-# Your real domain (no trailing slash). 
+# Your real domain (no trailing slash).
 # e.g. "https://jaspire.co"
 JASPIRE_DOMAIN = os.getenv('JASPIRE_DOMAIN', 'https://jaspire.co')
 
@@ -83,15 +83,21 @@ def callback():
             title="Authorization Failed",
             message="No authorization code provided in callback."
         )
-    redirect_uri = "https://jaspire.co/callback"
     
+    # EXACT same redirect_uri as above
+    redirect_uri = "https://jaspire.co/callback"
+
     # Exchange the authorization code for an access token
     body = {
         "client_id": SQ_APPLICATION_ID,
         "client_secret": SQ_APPLICATION_SECRET,
         "code": authorization_code,
-        "grant_type": "authorization_code"
+        "grant_type": "authorization_code",
+        # <-- Add redirect_uri here
+        "redirect_uri": redirect_uri
     }
+
+    print("DEBUG token exchange body:", body)
 
     client = Client(environment=SQ_ENVIRONMENT)
     response = client.o_auth.obtain_token(body)
