@@ -5,25 +5,24 @@ from square.client import Client
 
 load_dotenv()
 
-# environment defaults to "sandbox" if not set
+# Determine environment from .env, default to sandbox if not set
 SQ_ENVIRONMENT = os.getenv('SQ_ENVIRONMENT', 'sandbox').lower()
 SQ_APPLICATION_ID = os.getenv('SQ_APPLICATION_ID')
 SQ_APPLICATION_SECRET = os.getenv('SQ_APPLICATION_SECRET')
 
-# Determine base URL depending on environment
+# If you’re using the sandbox environment, you must use the sandbox base URL
 if SQ_ENVIRONMENT == 'production':
     base_url = "https://connect.squareup.com"
 else:
     base_url = "https://connect.squareupsandbox.com"
 
-# The domain from ngrok or your real domain
-# e.g. "https://xxxx-18-217-229-6.ngrok-free.app"
-# Make sure to NOT have a trailing slash
-NGROK_URL = os.getenv('NGROK_URL', 'https://xxxx-18-217-229-6.ngrok-free.app')
+# Your real domain (no trailing slash). 
+# e.g. "https://jaspire.co"
+JASPIRE_DOMAIN = os.getenv('JASPIRE_DOMAIN', 'https://jaspire.co')
 
 app = Flask(__name__)
 
-# Inline HTML templates (for demo). In production, use proper templates.
+# Inline HTML for demo purposes
 INDEX_HTML = """
 <!DOCTYPE html>
 <html>
@@ -49,9 +48,8 @@ CALLBACK_HTML = """
 
 @app.route("/", methods=["GET"])
 def index():
-    # The explicit redirect_uri is your callback route on the same domain
-    redirect_uri = f"{NGROK_URL}/callback"
-    # Include scope, e.g., MERCHANT_PROFILE_READ + PAYMENTS_WRITE
+    # Explicitly define your callback route
+    redirect_uri = f"{JASPIRE_DOMAIN}/callback"
     scope = "MERCHANT_PROFILE_READ+PAYMENTS_WRITE"
 
     # Build the full authorize URL
@@ -94,7 +92,6 @@ def callback():
         "grant_type": "authorization_code"
     }
 
-    # Initialize the Square client for token exchange
     client = Client(environment=SQ_ENVIRONMENT)
     response = client.o_auth.obtain_token(body)
 
@@ -119,5 +116,5 @@ def callback():
         )
 
 if __name__ == "__main__":
-    # Make sure your server port matches what you open in security group or ngrok
+    # Flask runs on port 8080; Nginx proxies from 80/443 -> 8080
     app.run(host="0.0.0.0", port=8080, debug=True)
