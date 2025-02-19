@@ -83,7 +83,8 @@ def callback():
             title="Authorization Failed",
             message="No authorization code provided in callback."
         )
-
+    redirect_uri = "https://jaspire.co/callback"
+    
     # Exchange the authorization code for an access token
     body = {
         "client_id": SQ_APPLICATION_ID,
